@@ -1,0 +1,11 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore virtual environment
+quora/
+
+# Ignore environment variables
+.env
+.vscode
+.git

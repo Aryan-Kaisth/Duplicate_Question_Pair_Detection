@@ -1,0 +1,18 @@
+[2025-12-06 22:10:46,194] 222 root - INFO - [READ YAML] Reading YAML file: config/database.yaml
+[2025-12-06 22:10:46,194] 227 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-06 22:10:46,194] 47 root - INFO - [INIT] Ensured data ingestion directory: artifacts/data_ingestion
+[2025-12-06 22:10:46,194] 117 root - INFO - ==== DATA INGESTION STARTED ====
+[2025-12-06 22:10:46,194] 68 root - INFO - [DB] Fetching data from table: questions
+[2025-12-06 22:10:48,561] 75 root - INFO - [DB] Data fetched → rows: 404351, columns: 6
+[2025-12-06 22:10:48,577] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/raw.csv
+[2025-12-06 22:10:49,493] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (404351, 6)
+[2025-12-06 22:10:49,493] 87 root - INFO - [SAVE] Raw data stored at artifacts/data_ingestion/raw.csv
+[2025-12-06 22:10:49,493] 93 root - INFO - [SPLIT] Performing train-test split (80-20)...
+[2025-12-06 22:10:49,530] 97 root - INFO - [SPLIT] Train: (323480, 6), Test: (80871, 6)
+[2025-12-06 22:10:49,530] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/train.csv
+[2025-12-06 22:10:50,370] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (323480, 6)
+[2025-12-06 22:10:50,370] 105 root - INFO - [SAVE] Train data saved to artifacts/data_ingestion/train.csv
+[2025-12-06 22:10:50,370] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/test.csv
+[2025-12-06 22:10:50,582] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (80871, 6)
+[2025-12-06 22:10:50,582] 108 root - INFO - [SAVE] Test data saved to artifacts/data_ingestion/test.csv
+[2025-12-06 22:10:50,582] 126 root - INFO - ==== DATA INGESTION COMPLETED SUCCESSFULLY ====
