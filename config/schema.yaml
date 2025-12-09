@@ -1,0 +1,11 @@
+drop_cols:
+  - id
+  - qid1
+  - qid2
+
+target_cols:
+  - is_duplicate
+
+text_cols:
+  - question1
+  - question2

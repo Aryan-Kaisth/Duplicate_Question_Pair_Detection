@@ -1,0 +1,26 @@
+[2025-12-09 19:41:14,700] 222 root - INFO - [READ YAML] Reading YAML file: config/database.yaml
+[2025-12-09 19:41:14,701] 227 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-09 19:41:14,701] 47 root - INFO - [INIT] Ensured data ingestion directory: artifacts/data_ingestion
+[2025-12-09 19:41:14,701] 117 root - INFO - ==== DATA INGESTION STARTED ====
+[2025-12-09 19:41:14,701] 68 root - INFO - [DB] Fetching data from table: questions
+[2025-12-09 19:41:16,906] 75 root - INFO - [DB] Data fetched → rows: 404351, columns: 6
+[2025-12-09 19:41:16,921] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/raw.csv
+[2025-12-09 19:41:17,800] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (404351, 6)
+[2025-12-09 19:41:17,800] 87 root - INFO - [SAVE] Raw data stored at artifacts/data_ingestion/raw.csv
+[2025-12-09 19:41:17,800] 93 root - INFO - [SPLIT] Performing train-test split (80-20)...
+[2025-12-09 19:41:17,836] 97 root - INFO - [SPLIT] Train: (323480, 6), Test: (80871, 6)
+[2025-12-09 19:41:17,836] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/train.csv
+[2025-12-09 19:41:18,645] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (323480, 6)
+[2025-12-09 19:41:18,645] 105 root - INFO - [SAVE] Train data saved to artifacts/data_ingestion/train.csv
+[2025-12-09 19:41:18,645] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/test.csv
+[2025-12-09 19:41:18,846] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (80871, 6)
+[2025-12-09 19:41:18,846] 108 root - INFO - [SAVE] Test data saved to artifacts/data_ingestion/test.csv
+[2025-12-09 19:41:18,846] 126 root - INFO - ==== DATA INGESTION COMPLETED SUCCESSFULLY ====
+[2025-12-09 19:41:18,891] 98 root - INFO - [INIT] Data transformation artifacts directory ensured.
+[2025-12-09 19:41:18,891] 222 root - INFO - [READ YAML] Reading YAML file: config/schema.yaml
+[2025-12-09 19:41:18,891] 227 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-09 19:41:18,891] 105 root - INFO - ['id"', 'qid1', 'qid2']
+[2025-12-09 19:41:18,891] 32 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/train.csv
+[2025-12-09 19:41:19,395] 39 root - INFO - [READ CSV] Successfully read CSV file. Shape: (323480, 6)
+[2025-12-09 19:41:19,395] 32 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/test.csv
+[2025-12-09 19:41:19,506] 39 root - INFO - [READ CSV] Successfully read CSV file. Shape: (80871, 6)
