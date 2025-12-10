@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quora Duplicate Question Detection</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+  <main class="page">
+
+    <!-- Title -->
+    <header class="project-title glass">
+      <h1>Quora Duplicate Question Detection</h1>
+      <p class="subtitle">Enter two questions to check whether they mean the same thing.</p>
+    </header>
+
+    <section class="layout">
+
+      <!-- Input Section -->
+      <form class="card glass input-card" onsubmit="event.preventDefault(); analyzeQuestions();">
+
+        <textarea id="question1"
+          placeholder="Enter Question 1..."
+          maxlength="1000"></textarea>
+
+        <textarea id="question2"
+          placeholder="Enter Question 2..."
+          maxlength="1000"
+          style="margin-top: 14px;"></textarea>
+
+        <div class="controls">
+          <button type="button" class="btn" id="predictBtn">Predict</button>
+          <button type="button" class="btn ghost" id="clearBtn">Clear</button>
+          <div class="spacer"></div>
+          <div class="stats">
+            Q1: <span id="q1Count">0</span> chars ·
+            Q2: <span id="q2Count">0</span> chars
+          </div>
+        </div>
+      </form>
+
+      <!-- Output Section -->
+      <aside class="card glass output-card">
+        <h2 class="output-header">Prediction</h2>
+
+        <div id="predictionArea" class="prediction-area">
+          Results will appear here.
+        </div>
+      </aside>
+
+    </section>
+
+    <footer class="footer">
+      <small>Made with ❤️ · Author: Aryan K.</small>
+    </footer>
+
+  </main>
+
+  <script>
+    const q1 = document.getElementById("question1");
+    const q2 = document.getElementById("question2");
+    const predictionArea = document.getElementById("predictionArea");
+    const q1Count = document.getElementById("q1Count");
+    const q2Count = document.getElementById("q2Count");
+
+    function updateStats() {
+      q1Count.textContent = q1.value.length;
+      q2Count.textContent = q2.value.length;
+    }
+
+    q1.addEventListener("input", updateStats);
+    q2.addEventListener("input", updateStats);
+    updateStats();
+
+    // 🔥 FastAPI Prediction Call
+    async function analyzeQuestions() {
+      const question1 = q1.value.trim();
+      const question2 = q2.value.trim();
+
+      if (!question1 || !question2) {
+        predictionArea.textContent = "Please enter both questions.";
+        return;
+      }
+
+      predictionArea.textContent = "Analyzing...";
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question1, question2 })
+        });
+
+        const output = await response.json();
+
+        if (output.error) {
+          predictionArea.textContent = "Error: " + output.error;
+          return;
+        }
+
+        const label = output.is_duplicate ? "✅ Duplicate" : "❌ Not Duplicate";
+        const prob = (output.probability * 100).toFixed(2);
+
+        predictionArea.innerHTML = `
+          <p><strong>Prediction:</strong> ${label}</p>
+          <p><strong>Confidence:</strong> ${prob}%</p>
+        `;
+
+      } catch (err) {
+        predictionArea.textContent = "An error occurred. Please try again.";
+      }
+    }
+
+    document.getElementById("predictBtn").onclick = analyzeQuestions;
+
+    document.getElementById("clearBtn").onclick = () => {
+      q1.value = "";
+      q2.value = "";
+      predictionArea.textContent = "Results will appear here.";
+      updateStats();
+    };
+  </script>
+
+</body>
+</html>
