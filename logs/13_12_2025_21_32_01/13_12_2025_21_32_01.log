@@ -1,0 +1,37 @@
+[2025-12-13 21:32:08,106] 222 root - INFO - [READ YAML] Reading YAML file: config/database.yaml
+[2025-12-13 21:32:08,107] 227 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-13 21:32:08,107] 47 root - INFO - [INIT] Ensured data ingestion directory: artifacts/data_ingestion
+[2025-12-13 21:32:08,107] 117 root - INFO - ==== DATA INGESTION STARTED ====
+[2025-12-13 21:32:08,107] 68 root - INFO - [DB] Fetching data from table: questions
+[2025-12-13 21:32:10,448] 75 root - INFO - [DB] Data fetched → rows: 404351, columns: 6
+[2025-12-13 21:32:10,465] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/raw.csv
+[2025-12-13 21:32:11,432] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (404351, 6)
+[2025-12-13 21:32:11,432] 87 root - INFO - [SAVE] Raw data stored at artifacts/data_ingestion/raw.csv
+[2025-12-13 21:32:11,432] 93 root - INFO - [SPLIT] Performing train-test split (80-20)...
+[2025-12-13 21:32:11,486] 97 root - INFO - [SPLIT] Train: (323480, 6), Test: (80871, 6)
+[2025-12-13 21:32:11,486] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/train.csv
+[2025-12-13 21:32:12,299] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (323480, 6)
+[2025-12-13 21:32:12,299] 105 root - INFO - [SAVE] Train data saved to artifacts/data_ingestion/train.csv
+[2025-12-13 21:32:12,299] 64 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/test.csv
+[2025-12-13 21:32:12,549] 69 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (80871, 6)
+[2025-12-13 21:32:12,550] 108 root - INFO - [SAVE] Test data saved to artifacts/data_ingestion/test.csv
+[2025-12-13 21:32:12,550] 126 root - INFO - ==== DATA INGESTION COMPLETED SUCCESSFULLY ====
+[2025-12-13 21:32:12,604] 98 root - INFO - [INIT] Data transformation artifacts directory ensured.
+[2025-12-13 21:32:12,605] 222 root - INFO - [READ YAML] Reading YAML file: config/schema.yaml
+[2025-12-13 21:32:12,606] 227 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-13 21:32:12,606] 32 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/train.csv
+[2025-12-13 21:32:13,126] 39 root - INFO - [READ CSV] Successfully read CSV file. Shape: (323480, 6)
+[2025-12-13 21:32:13,126] 32 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/test.csv
+[2025-12-13 21:32:13,234] 39 root - INFO - [READ CSV] Successfully read CSV file. Shape: (80871, 6)
+[2025-12-13 21:32:13,305] 32 root - INFO - [PIPELINE] Starting CustomPreprocessor
+[2025-12-13 21:33:07,884] 81 root - INFO - [PIPELINE] CustomPreprocessor completed successfully
+[2025-12-13 21:33:07,894] 32 root - INFO - [PIPELINE] Starting CustomPreprocessor
+[2025-12-13 21:33:21,124] 81 root - INFO - [PIPELINE] CustomPreprocessor completed successfully
+[2025-12-13 21:33:21,180] 189 root - INFO - [SAVE OBJ] Saving object to: artifacts/data_transformation/custom_preprocessor.pkl
+[2025-12-13 21:33:21,180] 195 root - INFO - [SAVE OBJ] Object successfully saved.
+[2025-12-13 21:33:21,187] 31 root - INFO - ModelTrainer initialized
+[2025-12-13 21:33:21,187] 35 root - INFO - Model training started
+[2025-12-13 21:33:24,260] 2049 gensim.models.keyedvectors - INFO - loading projection weights from /home/aryan/gensim-data/glove-twitter-200/glove-twitter-200.gz
+[2025-12-13 21:35:24,396] 447 gensim.utils - INFO - KeyedVectors lifecycle event {'msg': 'loaded (1193514, 200) matrix of type float32 from /home/aryan/gensim-data/glove-twitter-200/glove-twitter-200.gz', 'binary': False, 'encoding': 'utf8', 'datetime': '2025-12-13T21:35:24.396185', 'gensim': '4.4.0', 'python': '3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]', 'platform': 'Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39', 'event': 'load_word2vec_format'}
+[2025-12-13 21:35:25,612] 47 root - INFO - None
+[2025-12-13 21:35:28,437] 84 root - ERROR - Error during model training
