@@ -77,7 +77,6 @@
     q2.addEventListener("input", updateStats);
     updateStats();
 
-    // 🔥 FastAPI Prediction Call
     async function analyzeQuestions() {
       const question1 = q1.value.trim();
       const question2 = q2.value.trim();
@@ -98,17 +97,12 @@
 
         const output = await response.json();
 
-        if (output.error) {
-          predictionArea.textContent = "Error: " + output.error;
-          return;
-        }
-
-        const label = output.is_duplicate ? "✅ Duplicate" : "❌ Not Duplicate";
-        const prob = (output.probability * 100).toFixed(2);
+        const resultText = output.is_duplicate
+          ? "✅ These questions are DUPLICATES"
+          : "❌ These questions are NOT duplicates";
 
         predictionArea.innerHTML = `
-          <p><strong>Prediction:</strong> ${label}</p>
-          <p><strong>Confidence:</strong> ${prob}%</p>
+          <p><strong>Prediction:</strong> ${resultText}</p>
         `;
 
       } catch (err) {

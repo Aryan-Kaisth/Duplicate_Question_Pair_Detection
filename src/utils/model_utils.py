@@ -9,15 +9,25 @@ from keras.layers import (
     LSTM,
     Dense,
     Dropout,
-    Lambda
+    Lambda,
+    GlobalAveragePooling1D,
+    LayerNormalization
 )
 from keras.models import Model
 from keras.optimizers import Nadam
 from sklearn.utils.class_weight import compute_class_weight
 import gensim.downloader as api
 from keras.layers import TextVectorization, Embedding
+from keras.optimizers import RMSprop
 
+    
+from keras.layers import Layer
 
+class AbsoluteDifference(Layer):
+    def call(self, inputs):
+        x1, x2 = inputs
+        return tf.abs(x1 - x2)
+    
 # Text Vectorizer
 def build_text_vectorizer(X_train, max_tokens=25_000, seq_len=30):
     from keras.layers import TextVectorization
@@ -65,46 +75,36 @@ def build_glove_embedding_layer(vectorizer):
 # Siamese Model Architecture
 def build_siamese_model(vectorizer, embedding_layer, max_len=30):
     # Inputs
-    q1_input = Input(shape=(), dtype=tf.string, name="q1")
-    q2_input = Input(shape=(), dtype=tf.string, name="q2")
 
-    # Vectorization
+    q1_input = Input(shape=(), dtype="string", name="q1")
+    q2_input = Input(shape=(), dtype="string", name="q2")
+
     q1_int = vectorizer(q1_input)
     q2_int = vectorizer(q2_input)
 
-    # Shared Encoder
-    encoder_input = Input(shape=(max_len,), dtype="int32")
+    encoder_input = Input(shape=(None,), dtype="int32")
+
     x = embedding_layer(encoder_input)
-
-    x = Bidirectional(LSTM(32, return_sequences=True))(x)
-    x = Bidirectional(LSTM(16, return_sequences=True))(x)
-    x = Bidirectional(LSTM(8, return_sequences=True))(x)
-    x = Bidirectional(LSTM(4))(x)
-
-    x = Dense(32, activation="elu", kernel_initializer="he_normal")(x)
-    x = Dense(16, activation="elu", kernel_initializer="he_normal")(x)
-    x = Dense(8, activation="elu", kernel_initializer="he_normal")(x)
-    x = Dense(4, activation="elu", kernel_initializer="he_normal")(x)
+    x = GlobalAveragePooling1D()(x)
+    x = LayerNormalization()(x)
 
     encoder = Model(encoder_input, x, name="shared_encoder")
 
-    # Encode questions
     q1_vec = encoder(q1_int)
     q2_vec = encoder(q2_int)
 
-    # Absolute difference
-    abs_diff = Lambda(lambda x: tf.abs(x[0] - x[1]))([q1_vec, q2_vec])
+    text_features = keras.ops.abs(q1_vec - q2_vec)
 
-    # Similarity head
-    x = Dense(32, activation="elu", kernel_initializer="he_normal")(abs_diff)
-    x = Dense(16, activation="elu", kernel_initializer="he_normal")(x)
-    x = Dense(8, activation="elu", kernel_initializer="he_normal")(x)
-    x = Dense(4, activation="elu", kernel_initializer="he_normal")(x)
-    x = Dropout(0.7)(x)
+    x = Dense(64, activation="relu")(text_features)
+    x = Dropout(0.4)(x)
 
     output = Dense(1, activation="sigmoid", name="similarity")(x)
 
-    model = Model(inputs=[q1_input, q2_input], outputs=output)
+    model = Model(
+        inputs=[q1_input, q2_input],
+        outputs=output
+    )
+
     return model
 
 
@@ -143,3 +143,4 @@ def tokens_to_text(x):
         return x
     else:
         return str(x)
+

@@ -6,7 +6,7 @@ from src.logger import logging
 from src.exception import CustomException
 import numpy as np
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
-
+import tensorflow as tf
 from src.utils.model_utils import (
     build_text_vectorizer,
     build_glove_embedding_layer,
@@ -47,8 +47,6 @@ class ModelTrainer:
             logging.info(model.summary(show_trainable=True, line_length=115))
 
             # ---------------- Data ----------------
-            import tensorflow as tf
-
             q1_train = tf.constant(
                 [tokens_to_text(x) for x in X_train[:, 0]],
                 dtype=tf.string
@@ -77,7 +75,7 @@ class ModelTrainer:
                 {"q1": q1_train, "q2": q2_train},
                 y_train,
                 batch_size=256,
-                epochs=5,
+                epochs=10,
                 validation_split=0.3,
                 class_weight=class_weight
             )
