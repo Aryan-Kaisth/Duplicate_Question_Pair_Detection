@@ -1,0 +1,68 @@
+[2025-12-16 22:19:04,848] 223 root - INFO - [READ YAML] Reading YAML file: config/database.yaml
+[2025-12-16 22:19:04,849] 228 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-16 22:19:04,849] 47 root - INFO - [INIT] Ensured data ingestion directory: artifacts/data_ingestion
+[2025-12-16 22:19:04,849] 117 root - INFO - ==== DATA INGESTION STARTED ====
+[2025-12-16 22:19:04,849] 68 root - INFO - [DB] Fetching data from table: questions
+[2025-12-16 22:19:07,538] 75 root - INFO - [DB] Data fetched → rows: 404351, columns: 6
+[2025-12-16 22:19:07,554] 65 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/raw.csv
+[2025-12-16 22:19:08,499] 70 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (404351, 6)
+[2025-12-16 22:19:08,499] 87 root - INFO - [SAVE] Raw data stored at artifacts/data_ingestion/raw.csv
+[2025-12-16 22:19:08,499] 93 root - INFO - [SPLIT] Performing train-test split (80-20)...
+[2025-12-16 22:19:08,563] 97 root - INFO - [SPLIT] Train: (323480, 6), Test: (80871, 6)
+[2025-12-16 22:19:08,563] 65 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/train.csv
+[2025-12-16 22:19:09,404] 70 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (323480, 6)
+[2025-12-16 22:19:09,404] 105 root - INFO - [SAVE] Train data saved to artifacts/data_ingestion/train.csv
+[2025-12-16 22:19:09,404] 65 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/test.csv
+[2025-12-16 22:19:09,629] 70 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (80871, 6)
+[2025-12-16 22:19:09,629] 108 root - INFO - [SAVE] Test data saved to artifacts/data_ingestion/test.csv
+[2025-12-16 22:19:09,629] 126 root - INFO - ==== DATA INGESTION COMPLETED SUCCESSFULLY ====
+[2025-12-16 22:19:09,682] 116 root - INFO - [INIT] DataTransformation initialized
+[2025-12-16 22:19:09,682] 223 root - INFO - [READ YAML] Reading YAML file: config/schema.yaml
+[2025-12-16 22:19:09,683] 228 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-16 22:19:09,683] 219 root - INFO - [DataTransformation] Started
+[2025-12-16 22:19:09,683] 33 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/train.csv
+[2025-12-16 22:19:10,276] 40 root - INFO - [READ CSV] Successfully read CSV file. Shape: (323480, 6)
+[2025-12-16 22:19:10,276] 33 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/test.csv
+[2025-12-16 22:19:10,399] 40 root - INFO - [READ CSV] Successfully read CSV file. Shape: (80871, 6)
+[2025-12-16 22:19:10,399] 127 root - INFO - [FeatureCleaning] Initial shape: (323480, 6)
+[2025-12-16 22:19:10,457] 134 root - INFO - [FeatureCleaning] Final shape: (323477, 3)
+[2025-12-16 22:19:10,462] 127 root - INFO - [FeatureCleaning] Initial shape: (80871, 6)
+[2025-12-16 22:19:10,472] 134 root - INFO - [FeatureCleaning] Final shape: (80871, 3)
+[2025-12-16 22:19:10,473] 146 root - INFO - [FeatureEngineering] Started | Rows=323477
+[2025-12-16 22:24:01,450] 181 root - INFO - [FeatureEngineering] Completed | Shape=(323477, 22) | Time=290.98s
+[2025-12-16 22:24:01,482] 146 root - INFO - [FeatureEngineering] Started | Rows=80871
+[2025-12-16 22:25:12,675] 181 root - INFO - [FeatureEngineering] Completed | Shape=(80871, 22) | Time=71.19s
+[2025-12-16 22:25:12,684] 39 root - INFO - [CustomPreprocessor] Fit called (no state learned)
+[2025-12-16 22:25:12,685] 44 root - INFO - [CustomPreprocessor] Transform started | Rows=323477 Cols=22
+[2025-12-16 22:25:12,765] 52 root - INFO - [CustomPreprocessor] Processing column: question1
+[2025-12-16 22:25:43,360] 52 root - INFO - [CustomPreprocessor] Processing column: question2
+[2025-12-16 22:26:09,573] 87 root - INFO - [CustomPreprocessor] Completed in 56.89s
+[2025-12-16 22:26:09,584] 44 root - INFO - [CustomPreprocessor] Transform started | Rows=80871 Cols=22
+[2025-12-16 22:26:09,592] 52 root - INFO - [CustomPreprocessor] Processing column: question1
+[2025-12-16 22:26:16,243] 52 root - INFO - [CustomPreprocessor] Processing column: question2
+[2025-12-16 22:26:23,202] 87 root - INFO - [CustomPreprocessor] Completed in 13.62s
+[2025-12-16 22:26:23,226] 190 root - INFO - [SAVE OBJ] Saving object to: artifacts/data_transformation/custom_preprocessor.pkl
+[2025-12-16 22:26:23,227] 196 root - INFO - [SAVE OBJ] Object successfully saved.
+[2025-12-16 22:26:23,227] 208 root - INFO - [SAVE] Preprocessor saved at artifacts/data_transformation/custom_preprocessor.pkl
+[2025-12-16 22:26:23,227] 240 root - INFO - [DataTransformation] X_train=(323477, 21), y_train=(323477, 1)
+[2025-12-16 22:26:23,227] 243 root - INFO - [DataTransformation] X_test=(80871, 21), y_test=(80871, 1)
+[2025-12-16 22:26:23,233] 30 root - INFO - [INIT] ModelTrainer initialized
+[2025-12-16 22:26:23,233] 34 root - INFO - [TRAINER] Model training started
+[2025-12-16 22:26:23,258] 51 root - INFO - [TRAINER] Text shapes: q1=(323477,), q2=(323477,)
+[2025-12-16 22:26:23,258] 54 root - INFO - [TRAINER] Engineered feature shape: (323477, 19)
+[2025-12-16 22:26:26,657] 2049 gensim.models.keyedvectors - INFO - loading projection weights from /home/aryan/gensim-data/fasttext-wiki-news-subwords-300/fasttext-wiki-news-subwords-300.gz
+[2025-12-16 22:28:56,549] 447 gensim.utils - INFO - KeyedVectors lifecycle event {'msg': 'loaded (999999, 300) matrix of type float32 from /home/aryan/gensim-data/fasttext-wiki-news-subwords-300/fasttext-wiki-news-subwords-300.gz', 'binary': False, 'encoding': 'utf8', 'datetime': '2025-12-16T22:28:56.548988', 'gensim': '4.4.0', 'python': '3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]', 'platform': 'Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39', 'event': 'load_word2vec_format'}
+[2025-12-16 22:28:56,575] 134 root - ERROR - [TRAINER] Error during model training
+Traceback (most recent call last):
+  File "/home/aryan/playground/Duplicate Question Detection/src/components/model_trainer.py", line 65, in initiate_model_trainer
+    embedding_layer = build_fasttext_embedding_layer(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/playground/Duplicate Question Detection/src/utils/model_utils.py", line 52, in build_fasttext_embedding_layer
+    embedding_matrix[idx] = fasttext_model.get_vector(word)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/miniconda3/envs/quora/lib/python3.11/site-packages/gensim/models/keyedvectors.py", line 446, in get_vector
+    index = self.get_index(key)
+            ^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/miniconda3/envs/quora/lib/python3.11/site-packages/gensim/models/keyedvectors.py", line 420, in get_index
+    raise KeyError(f"Key '{key}' not present")
+KeyError: "Key '[UNK]' not present"

@@ -1,20 +1,18 @@
-# src/components/model_trainer.py
-
 import os, sys
 from dataclasses import dataclass
+
+import numpy as np
+import tensorflow as tf
+from keras.callbacks import EarlyStopping
+
 from src.logger import logging
 from src.exception import CustomException
-import numpy as np
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau
-import tensorflow as tf
+
 from src.utils.model_utils import (
     build_text_vectorizer,
-    build_glove_embedding_layer,
+    build_fasttext_embedding_layer,
     build_siamese_model,
-    compute_class_weights,
-    compile_model,
-    tokens_to_text,
-
+    compute_class_weights
 )
 
 
@@ -24,98 +22,140 @@ class ModelTrainerConfig:
         "artifacts", "model_trainer", "siamese.keras"
     )
 
+
 class ModelTrainer:
     def __init__(self):
         self.config = ModelTrainerConfig()
         os.makedirs(os.path.dirname(self.config.model_file_path), exist_ok=True)
-        logging.info("ModelTrainer initialized")
+        logging.info("[INIT] ModelTrainer initialized")
 
-    def initiate_model_trainer(self, X_train, X_test, y_train, y_test):
+    def initiate_model_trainer(self, X_train_df, X_test_df, y_train, y_test):
         try:
-            logging.info("Model training started")
+            logging.info("[TRAINER] Model training started")
 
-            # ---------------- Vectorizer ----------------
-            vectorizer = build_text_vectorizer(X_train)
+            # Split inputs from DataFrame
+            q1_train = X_train_df["question1"].values
+            q2_train = X_train_df["question2"].values
 
-            # ---------------- Embedding ----------------
-            embedding_layer = build_glove_embedding_layer(vectorizer)
+            q1_test = X_test_df["question1"].values
+            q2_test = X_test_df["question2"].values
 
-            # ---------------- Model ----------------
-            model = build_siamese_model(vectorizer, embedding_layer)
-            model = compile_model(model)
+            feature_cols = [
+                col for col in X_train_df.columns
+                if col not in ["question1", "question2"]
+            ]
 
-            logging.info(model.summary(show_trainable=True, line_length=115))
+            Xf_train = X_train_df[feature_cols].values
+            Xf_test = X_test_df[feature_cols].values
 
-            # ---------------- Data ----------------
-            q1_train = tf.constant(
-                [tokens_to_text(x) for x in X_train[:, 0]],
-                dtype=tf.string
+            logging.info(
+                f"[TRAINER] Text shapes: q1={q1_train.shape}, q2={q2_train.shape}"
             )
-            q2_train = tf.constant(
-                [tokens_to_text(x) for x in X_train[:, 1]],
-                dtype=tf.string
-            )
-
-            q1_test = tf.constant(
-                [tokens_to_text(x) for x in X_test[:, 0]],
-                dtype=tf.string
-            )
-            q2_test = tf.constant(
-                [tokens_to_text(x) for x in X_test[:, 1]],
-                dtype=tf.string
+            logging.info(
+                f"[TRAINER] Engineered feature shape: {Xf_train.shape}"
             )
 
-            y_train = tf.constant(y_train.ravel(), dtype=tf.int32)
-            y_test = tf.constant(y_test.ravel(), dtype=tf.int32)
+            # Text Vectorizer (adapt on TRAIN text only)
+            vectorizer = build_text_vectorizer(
+                q1=q1_train,
+                q2=q2_train
+            )
 
+            # Embedding Layer (FastText)
+            embedding_layer = build_fasttext_embedding_layer(
+                vectorizer=vectorizer,
+                trainable=False
+            )
+
+            # Siamese Model
+            model = build_siamese_model(
+                vectorizer=vectorizer,
+                embedding_layer=embedding_layer,
+                num_engineered_features=Xf_train.shape[1]
+            )
+
+            model.summary(show_trainable=True, line_length=120)
+
+            # Class weights
             class_weight = compute_class_weights(y_train)
 
-            # ---------------- Training ----------------
+            # Callbacks
+            callbacks = [
+                EarlyStopping(
+                    monitor="val_auc",
+                    patience=2,
+                    restore_best_weights=True
+                )
+            ]
+
+            # Training
             model.fit(
-                {"q1": q1_train, "q2": q2_train},
+                {
+                    "q1": q1_train,
+                    "q2": q2_train,
+                    "engineered_features": Xf_train
+                },
                 y_train,
+                validation_data=(
+                    {
+                        "q1": q1_test,
+                        "q2": q2_test,
+                        "engineered_features": Xf_test
+                    },
+                    y_test
+                ),
                 batch_size=256,
-                epochs=10,
-                validation_split=0.3,
-                class_weight=class_weight
+                epochs=15,
+                class_weight=class_weight,
+                callbacks=callbacks
             )
 
-            # ---------------- Evaluation ----------------
+            # Evaluation
             metrics = model.evaluate(
-                {"q1": q1_test, "q2": q2_test},
+                {
+                    "q1": q1_test,
+                    "q2": q2_test,
+                    "engineered_features": Xf_test
+                },
                 y_test
             )
-            logging.info(f"Test metrics: {metrics}")
 
-            # ---------------- Save ----------------
+            logging.info(f"[TRAINER] Test metrics: {metrics}")
+
+            # Save model
             model.save(self.config.model_file_path)
-            logging.info(f"Model saved at {self.config.model_file_path}")
+            logging.info(
+                f"[TRAINER] Model saved at {self.config.model_file_path}"
+            )
 
             return model
 
         except Exception as e:
-            logging.error("Error during model training")
+            logging.exception("[TRAINER] Error during model training")
             raise CustomException(e, sys)
 
 
-# ---- Testing ----
+# LOCAL TEST
 if __name__ == "__main__":
-    from src.components.data_ingestion import DataIngestion, DataIngestionConfig
+    from src.components.data_ingestion import (
+        DataIngestion,
+        DataIngestionConfig
+    )
     from src.components.data_transformation import DataTransformation
 
-    # Paths to train and test data
     ingest_config = DataIngestionConfig()
     data_ingestion = DataIngestion(config=ingest_config)
-    train_data_path, test_data_path = data_ingestion.initiate_data_ingestion()
 
-    # Initialize the transformer
+    train_path, test_path = data_ingestion.initiate_data_ingestion()
+
     transformer = DataTransformation()
 
-    # Run the data transformation
-    X_train_transformed, X_test_transformed, y_train, y_test = transformer.initiate_data_transformation(
-        train_path=train_data_path,
-        test_path=test_data_path
+    X_train_df, X_test_df, y_train, y_test = transformer.initiate_data_transformation(
+        train_path=train_path,
+        test_path=test_path
     )
 
-    model = ModelTrainer()
-    model.initiate_model_trainer(X_train_transformed, X_test_transformed, y_train, y_test)
+    trainer = ModelTrainer()
+    trainer.initiate_model_trainer(
+        X_train_df, X_test_df, y_train.values, y_test.values
+    )
