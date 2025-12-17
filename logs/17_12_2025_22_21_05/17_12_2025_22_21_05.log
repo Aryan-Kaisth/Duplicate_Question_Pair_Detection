@@ -1,0 +1,11 @@
+[2025-12-17 22:21:05,943] 17 root - INFO - [INIT] Loading model from artifacts/model_trainer/custom_model.keras
+[2025-12-17 22:21:08,677] 22 root - INFO - [INIT] PredictionPipeline ready
+[2025-12-17 22:21:23,860] 30 root - INFO - [PREDICT] Raw input received
+[2025-12-17 22:21:23,860] 31 root - INFO - [PREDICT] Question 1 (raw): My name is aryan, I can't swim
+[2025-12-17 22:21:23,860] 32 root - INFO - [PREDICT] Question 2 (raw): My name is aryan, I don't know how to swim
+[2025-12-17 22:21:23,860] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:21:25,727] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:21:25,727] 37 root - INFO - [PREDICT] Preprocessing completed
+[2025-12-17 22:21:25,727] 38 root - INFO - [PREDICT] Question 1 (cleaned): my name is aryan i can not swim
+[2025-12-17 22:21:25,727] 39 root - INFO - [PREDICT] Question 2 (cleaned): my name is aryan i do not know how to swim
+[2025-12-17 22:21:28,464] 49 root - INFO - [PREDICT] Prediction score: 0.874311625957489

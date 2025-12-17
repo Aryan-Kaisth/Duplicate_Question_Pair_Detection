@@ -1,0 +1,20 @@
+[2025-12-17 22:28:04,513] 17 root - INFO - [INIT] Loading model from artifacts/model_trainer/custom_model.keras
+[2025-12-17 22:28:08,924] 22 root - INFO - [INIT] PredictionPipeline ready
+[2025-12-17 22:29:59,191] 30 root - INFO - [PREDICT] Raw input received
+[2025-12-17 22:29:59,191] 31 root - INFO - [PREDICT] Question 1 (raw): Are there any telescopes powerful enough to view evidence left behind from NASA's moon landings?
+[2025-12-17 22:29:59,191] 32 root - INFO - [PREDICT] Question 2 (raw): Do we have telescopes powerful enough nowadays to see the man-made objects left on the moon by the Apollo missions, proving 100% that humans did in fact land there?
+[2025-12-17 22:29:59,191] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:30:01,541] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:30:01,541] 37 root - INFO - [PREDICT] Preprocessing completed
+[2025-12-17 22:30:01,541] 38 root - INFO - [PREDICT] Question 1 (cleaned): are there any telescope powerful enough to view evidence left behind from nasa moon landing
+[2025-12-17 22:30:01,541] 39 root - INFO - [PREDICT] Question 2 (cleaned): do we have telescope powerful enough nowadays to see the manmade object left on the moon by the apollo mission proving 100 that human did in fact land there
+[2025-12-17 22:30:04,571] 49 root - INFO - [PREDICT] Prediction score: 0.37436482310295105
+[2025-12-17 22:31:01,736] 30 root - INFO - [PREDICT] Raw input received
+[2025-12-17 22:31:01,736] 31 root - INFO - [PREDICT] Question 1 (raw): What will the real estate look like now after the 500 and 1000 scraping?
+[2025-12-17 22:31:01,736] 32 root - INFO - [PREDICT] Question 2 (raw): How will abolishing Rs. 500 and Rs. 1000 notes affect the real estate businesses in India?
+[2025-12-17 22:31:01,736] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:31:01,737] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:31:01,737] 37 root - INFO - [PREDICT] Preprocessing completed
+[2025-12-17 22:31:01,737] 38 root - INFO - [PREDICT] Question 1 (cleaned): what will the real estate look like now after the 500 and 1000 scraping
+[2025-12-17 22:31:01,737] 39 root - INFO - [PREDICT] Question 2 (cleaned): how will abolishing r 500 and r 1000 note affect the real estate business in india
+[2025-12-17 22:31:01,800] 49 root - INFO - [PREDICT] Prediction score: 0.9735684990882874

@@ -5,25 +5,27 @@ import numpy as np
 import keras
 from keras.layers import (
     Input,
-    Bidirectional,
-    LSTM,
+    Conv1D,
     Dense,
     Dropout,
     Lambda,
-    GlobalAveragePooling1D,
+    GlobalMaxPooling1D,
     LayerNormalization,
-    Concatenate
+    Concatenate,
+    Subtract, 
+    Multiply, 
+    Dot,
+    GlobalAveragePooling1D
 )
 from keras.models import Model
-from keras.optimizers import Nadam
+from keras.optimizers import RMSprop
 from sklearn.utils.class_weight import compute_class_weight
 import gensim.downloader as api
 from keras.layers import TextVectorization, Embedding
-from keras.optimizers import RMSprop
-from keras.layers import Layer
-    
+from keras.regularizers import l2
 # Text Vectorizer
-def build_text_vectorizer(q1, q2, max_tokens=40_000, seq_len=30):
+
+def build_text_vectorizer(q1, q2, max_tokens=25_000, seq_len=30):
     from keras.layers import TextVectorization
 
     vectorizer = TextVectorization(
@@ -37,8 +39,8 @@ def build_text_vectorizer(q1, q2, max_tokens=40_000, seq_len=30):
     return vectorizer
 
 # fasttext Embedding Layer
-def build_fasttext_embedding_layer(vectorizer, trainable=True):
-    fasttext_model = api.load("fasttext-wiki-news-subwords-300")
+def build_fasttext_embedding_layer(vectorizer):
+    fasttext_model = api.load('glove-wiki-gigaword-100')
     embedding_dim = fasttext_model.vector_size
 
     vocab = vectorizer.get_vocabulary()
@@ -60,28 +62,15 @@ def build_fasttext_embedding_layer(vectorizer, trainable=True):
         input_dim=vocab_size,
         output_dim=embedding_dim,
         embeddings_initializer=keras.initializers.Constant(embedding_matrix),
-        trainable=trainable,
+        trainable=True,
         mask_zero=False
     )
-
     return embedding_layer
 
 # Siamese Model Architecture
-def build_siamese_model(
-    vectorizer,
-    embedding_layer,
-    num_engineered_features: int,
-    dropout_rate: float = 0.8
-) -> Model:
-    
+def build_siamese_cnn_model(vectorizer, embedding_layer):
     q1_input = Input(shape=(), dtype="string", name="q1")
     q2_input = Input(shape=(), dtype="string", name="q2")
-
-    feat_input = Input(
-        shape=(num_engineered_features,),
-        dtype="float32",
-        name="engineered_features"
-    )
 
     q1_int = vectorizer(q1_input)
     q2_int = vectorizer(q2_input)
@@ -89,29 +78,45 @@ def build_siamese_model(
     encoder_input = Input(shape=(None,), dtype="int32")
 
     x = embedding_layer(encoder_input)
-    x = GlobalAveragePooling1D()(x)
-    x = LayerNormalization()(x)
 
-    encoder = Model(encoder_input, x, name="siamese_encoder")
+    conv2 = Conv1D(32, 2, padding="same", activation="relu")(x)
+    conv3 = Conv1D(32, 3, padding="same", activation="relu")(x)
+    conv4 = Conv1D(32, 4, padding="same", activation="relu")(x)
+    conv5 = Conv1D(32, 5, padding="same", activation="relu")(x)
+
+    conv_out = Concatenate()([conv2, conv3, conv4, conv5])
+
+    avg_pool = GlobalAveragePooling1D()(conv_out)
+    max_pool = GlobalMaxPooling1D()(conv_out)
+
+    text_vec = Concatenate()([avg_pool, max_pool])
+    text_vec = LayerNormalization()(text_vec)
+
+    encoder = Model(
+        encoder_input,
+        text_vec,
+        name="siamese_encoder"
+    )
 
     q1_vec = encoder(q1_int)
     q2_vec = encoder(q2_int)
 
-    text_diff = tf.keras.ops.abs(q1_vec - q2_vec)
+    diff = keras.ops.abs(q1_vec - q2_vec)
+    mul  = q1_vec * q2_vec
+    cos  = Dot(axes=1, normalize=True)([q1_vec, q2_vec])
 
-    f = Dense(32, activation="relu")(feat_input)
-
-    combined = Concatenate()([text_diff, f])
+    combined = Concatenate()([diff, mul, cos])
 
     x = Dense(32, activation="relu")(combined)
-    x = Dropout(dropout_rate)(x)
+    x = Dropout(0.4)(x)
+
     x = Dense(16, activation="relu")(x)
-    x = Dropout(dropout_rate)(x)
+    x = Dropout(0.3)(x)
 
     output = Dense(1, activation="sigmoid", name="similarity")(x)
 
     model = Model(
-        inputs=[q1_input, q2_input, feat_input],
+        inputs=[q1_input, q2_input],
         outputs=output
     )
 

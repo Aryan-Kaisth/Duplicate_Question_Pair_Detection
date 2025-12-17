@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import Annotated
+from typing_extensions import Annotated
 
+import numpy as np
 class QuestionPairInput(BaseModel):
     question1: Annotated[
         str,

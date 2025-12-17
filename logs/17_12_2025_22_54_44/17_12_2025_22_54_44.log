@@ -1,0 +1,64 @@
+[2025-12-17 22:54:44,883] 223 root - INFO - [READ YAML] Reading YAML file: config/database.yaml
+[2025-12-17 22:54:44,884] 228 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-17 22:54:44,884] 46 root - INFO - [INIT] Ensured data ingestion directory: artifacts/data_ingestion
+[2025-12-17 22:54:44,884] 116 root - INFO - ==== DATA INGESTION STARTED ====
+[2025-12-17 22:54:44,884] 67 root - INFO - [DB] Fetching data from table: questions
+[2025-12-17 22:54:47,294] 74 root - INFO - [DB] Data fetched → rows: 404351, columns: 6
+[2025-12-17 22:54:47,309] 65 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/raw.csv
+[2025-12-17 22:54:48,231] 70 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (404351, 6)
+[2025-12-17 22:54:48,231] 86 root - INFO - [SAVE] Raw data stored at artifacts/data_ingestion/raw.csv
+[2025-12-17 22:54:48,231] 92 root - INFO - [SPLIT] Performing train-test split (80-20)...
+[2025-12-17 22:54:48,280] 96 root - INFO - [SPLIT] Train: (323480, 6), Test: (80871, 6)
+[2025-12-17 22:54:48,280] 65 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/train.csv
+[2025-12-17 22:54:49,155] 70 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (323480, 6)
+[2025-12-17 22:54:49,155] 104 root - INFO - [SAVE] Train data saved to artifacts/data_ingestion/train.csv
+[2025-12-17 22:54:49,155] 65 root - INFO - [SAVE CSV] Saving DataFrame to: artifacts/data_ingestion/test.csv
+[2025-12-17 22:54:49,373] 70 root - INFO - [SAVE CSV] DataFrame successfully saved. Shape: (80871, 6)
+[2025-12-17 22:54:49,373] 107 root - INFO - [SAVE] Test data saved to artifacts/data_ingestion/test.csv
+[2025-12-17 22:54:49,373] 125 root - INFO - ==== DATA INGESTION COMPLETED SUCCESSFULLY ====
+[2025-12-17 22:54:49,420] 36 root - INFO - [INIT] DataTransformation initialized | Loading schema configuration
+[2025-12-17 22:54:49,420] 223 root - INFO - [READ YAML] Reading YAML file: config/schema.yaml
+[2025-12-17 22:54:49,421] 228 root - INFO - [READ YAML] YAML file read successfully.
+[2025-12-17 22:54:49,421] 46 root - INFO - [INIT] Schema loaded | Targets=['is_duplicate'], TextCols=['question1', 'question2'], DropCols=['id', 'qid1', 'qid2']
+[2025-12-17 22:54:49,421] 92 root - INFO - [DataTransformation] Pipeline started
+[2025-12-17 22:54:49,421] 97 root - INFO - [LOAD] Reading train data from: artifacts/data_ingestion/train.csv
+[2025-12-17 22:54:49,421] 33 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/train.csv
+[2025-12-17 22:54:49,969] 40 root - INFO - [READ CSV] Successfully read CSV file. Shape: (323480, 6)
+[2025-12-17 22:54:49,969] 102 root - INFO - [LOAD] Reading test data from: artifacts/data_ingestion/test.csv
+[2025-12-17 22:54:49,969] 33 root - INFO - [READ CSV] Attempting to read CSV file at: artifacts/data_ingestion/test.csv
+[2025-12-17 22:54:50,077] 40 root - INFO - [READ CSV] Successfully read CSV file. Shape: (80871, 6)
+[2025-12-17 22:54:50,077] 107 root - INFO - [LOAD] Data loaded | TrainShape=(323480, 6), TestShape=(80871, 6)
+[2025-12-17 22:54:50,077] 56 root - INFO - [CLEAN:TRAIN] Starting data cleaning | Shape=(323480, 6)
+[2025-12-17 22:54:50,128] 63 root - INFO - [CLEAN:TRAIN] Cleaning completed | Shape=(323477, 3)
+[2025-12-17 22:54:50,133] 56 root - INFO - [CLEAN:TEST] Starting data cleaning | Shape=(80871, 6)
+[2025-12-17 22:54:50,143] 63 root - INFO - [CLEAN:TEST] Cleaning completed | Shape=(80871, 3)
+[2025-12-17 22:54:50,144] 117 root - INFO - [PREPROCESS] Initializing CustomPreprocessor for text columns
+[2025-12-17 22:54:50,144] 123 root - INFO - [PREPROCESS] Fitting preprocessor on training data
+[2025-12-17 22:54:50,144] 22 root - INFO - [CustomPreprocessor] Fit called (stateless)
+[2025-12-17 22:54:50,144] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:54:50,151] 64 root - INFO - [CustomPreprocessor] Processing column: question1
+[2025-12-17 22:55:23,327] 64 root - INFO - [CustomPreprocessor] Processing column: question2
+[2025-12-17 22:55:55,534] 128 root - INFO - [PREPROCESS] Applying preprocessor on test data
+[2025-12-17 22:55:55,534] 45 root - INFO - [CustomPreprocessor] Transform called
+[2025-12-17 22:55:55,536] 64 root - INFO - [CustomPreprocessor] Processing column: question1
+[2025-12-17 22:56:03,467] 64 root - INFO - [CustomPreprocessor] Processing column: question2
+[2025-12-17 22:56:11,227] 73 root - INFO - [SPLIT:TRAIN] Splitting features and target columns
+[2025-12-17 22:56:11,235] 80 root - INFO - [SPLIT:TRAIN] Split completed | X=(323477, 2), y=(323477, 1)
+[2025-12-17 22:56:11,236] 73 root - INFO - [SPLIT:TEST] Splitting features and target columns
+[2025-12-17 22:56:11,238] 80 root - INFO - [SPLIT:TEST] Split completed | X=(80871, 2), y=(80871, 1)
+[2025-12-17 22:56:11,238] 190 root - INFO - [SAVE OBJ] Saving object to: artifacts/data_transformation/custom_preprocessor.pkl
+[2025-12-17 22:56:11,238] 196 root - INFO - [SAVE OBJ] Object successfully saved.
+[2025-12-17 22:56:11,238] 139 root - INFO - [SAVE] Preprocessor artifact saved | Path=artifacts/data_transformation/custom_preprocessor.pkl
+[2025-12-17 22:56:11,238] 144 root - INFO - [DataTransformation] Pipeline completed successfully
+[2025-12-17 22:56:11,245] 27 root - INFO - [INIT] ModelTrainer ready | Model path: artifacts/model_trainer/custom_model.keras
+[2025-12-17 22:56:11,245] 34 root - INFO - [TRAINER] Training pipeline started
+[2025-12-17 22:56:11,245] 42 root - INFO - [DATA] Train size=323477, Test size=80871
+[2025-12-17 22:56:11,245] 47 root - INFO - [VECTORIZER] Building text vectorizer
+[2025-12-17 22:56:15,198] 51 root - INFO - [EMBEDDING] Initializing embedding layer
+[2025-12-17 22:56:16,303] 2049 gensim.models.keyedvectors - INFO - loading projection weights from /home/aryan/gensim-data/glove-wiki-gigaword-100/glove-wiki-gigaword-100.gz
+[2025-12-17 22:56:38,932] 447 gensim.utils - INFO - KeyedVectors lifecycle event {'msg': 'loaded (400000, 100) matrix of type float32 from /home/aryan/gensim-data/glove-wiki-gigaword-100/glove-wiki-gigaword-100.gz', 'binary': False, 'encoding': 'utf8', 'datetime': '2025-12-17T22:56:38.932309', 'gensim': '4.4.0', 'python': '3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]', 'platform': 'Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39', 'event': 'load_word2vec_format'}
+[2025-12-17 22:56:39,026] 57 root - INFO - [MODEL] Building Siamese model
+[2025-12-17 22:56:40,061] 75 root - INFO - [TRAINING] Starting model fit
+[2025-12-17 23:00:20,527] 99 root - INFO - [EVALUATION] Test metrics: [0.36169010400772095, 0.9138506054878235]
+[2025-12-17 23:00:23,638] 103 root - INFO - [SAVE] Model saved successfully
+[2025-12-17 23:00:23,638] 105 root - INFO - [TRAINER] Training pipeline completed

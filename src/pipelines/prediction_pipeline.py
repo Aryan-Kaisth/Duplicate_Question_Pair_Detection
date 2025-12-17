@@ -1,32 +1,55 @@
-import os, sys
-import keras
+import os
+import sys
 import tensorflow as tf
 from keras.models import load_model
 from src.logger import logging
 from src.exception import CustomException
+from src.utils.custom_preprocessor import CustomPreprocessor
+
 
 class PredictionPipeline:
     def __init__(self):
         try:
-            keras.config.enable_unsafe_deserialization()
-
             model_path = os.path.join(
-                "artifacts", "model_trainer", "siamese.keras"
+                "artifacts", "model_trainer", "custom_model.keras"
             )
 
+            logging.info(f"[INIT] Loading model from {model_path}")
             self.model = load_model(model_path)
-            logging.info("✅ PredictionPipeline initialized successfully.")
+
+            self.preprocessor = CustomPreprocessor()
+
+            logging.info("[INIT] PredictionPipeline ready")
 
         except Exception as e:
-            logging.error("❌ Error initializing PredictionPipeline.")
+            logging.exception("[INIT] Model loading failed")
             raise CustomException(e, sys)
 
     def predict(self, question1: str, question2: str) -> float:
-        q1 = tf.constant([question1], dtype=tf.string)
-        q2 = tf.constant([question2], dtype=tf.string)
+        try:
+            logging.info("[PREDICT] Raw input received")
+            logging.info(f"[PREDICT] Question 1 (raw): {question1}")
+            logging.info(f"[PREDICT] Question 2 (raw): {question2}")
 
-        score = self.model.predict(
-            {"q1": q1, "q2": q2}
-        )[0][0]
+            q1 = self.preprocessor.transform(question1)
+            q2 = self.preprocessor.transform(question2)
 
-        return float(score)
+            logging.info("[PREDICT] Preprocessing completed")
+            logging.info(f"[PREDICT] Question 1 (cleaned): {q1}")
+            logging.info(f"[PREDICT] Question 2 (cleaned): {q2}")
+
+            score = self.model.predict(
+                (
+                    tf.constant([q1], dtype=tf.string),
+                    tf.constant([q2], dtype=tf.string),
+                ),
+                verbose=0
+            )[0][0]
+
+            logging.info(f"[PREDICT] Prediction score: {float(score)}")
+
+            return float(score)
+
+        except Exception as e:
+            logging.exception("[PREDICT] Inference failed")
+            raise CustomException(e, sys)

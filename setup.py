@@ -18,7 +18,7 @@ setup(
     author="Aryan",
     author_email="aryankaisthpvt@gmail.com",
     description="""
-    A neural network–based NLP project that identifies duplicate question pairs by learning semantic similarity between texts.
+    A siamese neural network–based NLP project that identifies duplicate question pairs by learning semantic similarity between texts using custom architecture.
     """,
     packages=find_packages(),
     install_requires=get_requirements("requirements.txt"),
